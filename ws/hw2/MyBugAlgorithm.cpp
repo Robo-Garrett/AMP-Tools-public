@@ -40,10 +40,10 @@ bool MyBugAlgorithm::isInCollision(const Eigen::Vector2d& position, const amp::P
 
 // Check if a point is inside a given obstacle (bounding box check)
 bool MyBugAlgorithm::isPointInsideObstacle(const Eigen::Vector2d& point, const amp::Obstacle2D& obstacle) const {
-    Eigen::Vector2d min_bound = obstacle.vertices[0];
-    Eigen::Vector2d max_bound = obstacle.vertices[0];
+    Eigen::Vector2d min_bound = obstacle.verticesCW()[0];
+    Eigen::Vector2d max_bound = obstacle.verticesCW()[0];
 
-    for (const auto& vertex : obstacle.vertices) {
+    for (const auto& vertex : obstacle.verticesCW()) {
         min_bound = min_bound.cwiseMin(vertex);
         max_bound = max_bound.cwiseMax(vertex);
     }
