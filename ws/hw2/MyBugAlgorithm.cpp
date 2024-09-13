@@ -98,8 +98,8 @@ Eigen::Vector2d MyBugAlgorithm::findNextBoundaryPoint(const Eigen::Vector2d& cur
         // Loop through each edge of the obstacle
         for (int i = 0; i < num_vertices; ++i) {
             // Get the current edge vertices
-            Eigen::Vector2d v1 = obstacle.vertices[i];
-            Eigen::Vector2d v2 = obstacle.vertices[(i + 1) % num_vertices];  // Wrap around to the first vertex
+            Eigen::Vector2d v1 = obstacle.verticesCCW[i];
+            Eigen::Vector2d v2 = obstacle.verticesCCW[(i + 1) % num_vertices];  // Wrap around to the first vertex
 
             // Check if the robot is close to this edge (within some small threshold)
             if (isNearEdge(current_position, v1, v2)) {
@@ -129,4 +129,45 @@ MyBugAlgorithm::reachedStartBoundary(const Eigen::Vector2d& current_position) {
     // Check if the current position is close enough to the start boundary position
     double distance_to_start = (current_position - start_boundary_position).norm();
     return (distance_to_start < threshold);
+}
+bool MyBugAlgorithm::isNearEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2) {
+    // Calculate the vector along the edge
+    Eigen::Vector2d edge_direction = v2 - v1;
+    
+    // Calculate the vector from the position to one of the vertices
+    Eigen::Vector2d to_position = position - v1;
+    
+    // Project the position onto the edge to find the closest point on the edge
+    double t = edge_direction.dot(to_position) / edge_direction.squaredNorm();
+    t = std::clamp(t, 0.0, 1.0); // Clamp to the range [0, 1] to ensure the closest point is on the edge segment
+
+    // Closest point on the edge
+    Eigen::Vector2d closest_point_on_edge = v1 + t * edge_direction;
+
+    // Check if the distance between the position and the closest point is within a small threshold
+    double distance_to_edge = (position - closest_point_on_edge).norm();
+    double edge_threshold = 0.1; // Define how close we need to be to consider it "near" the edge
+
+    return distance_to_edge < edge_threshold;
+}
+
+Eigen::Vector2d MyBugAlgorithm::moveAlongEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2) {
+    // Calculate the direction along the edge
+    Eigen::Vector2d edge_direction = (v2 - v1).normalized();
+    
+    // Define a step size for how far we move along the edge at each iteration
+    double step_size = 0.05; // You can adjust this based on how fast you want to move along the edge
+
+    // Move the position along the edge by the step size
+    Eigen::Vector2d new_position = position + edge_direction * step_size;
+
+    // Ensure the new position does not go past the edge (i.e., stays within the segment defined by v1 and v2)
+    double t = (new_position - v1).dot(v2 - v1) / (v2 - v1).squaredNorm();
+    if (t > 1.0) {
+        new_position = v2;  // If we've reached or passed v2, clamp the position to v2
+    } else if (t < 0.0) {
+        new_position = v1;  // If we've reached or passed v1, clamp the position to v1
+    }
+
+    return new_position;
 }

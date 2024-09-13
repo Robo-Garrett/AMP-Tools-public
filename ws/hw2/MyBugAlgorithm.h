@@ -10,20 +10,21 @@ class MyBugAlgorithm : public amp::BugAlgorithm {
         virtual amp::Path2D plan(const amp::Problem2D& problem) override;
 
         // Add any other methods here...
-        bool MyBugAlgorithm::isInCollision(const Eigen::Vector2d& position, const amp::Problem2D& problem);
+        bool isInCollision(const Eigen::Vector2d& position, const amp::Problem2D& problem);
 
-        bool MyBugAlgorithm::isPointInsideObstacle(const Eigen::Vector2d& point, const amp::Obstacle2D& obstacle);
+        bool isPointInsideObstacle(const Eigen::Vector2d& point, const amp::Obstacle2D& obstacle);
 
-        void MyBugAlgorithm::followBoundary(Eigen::Vector2d& current_position, const amp::Problem2D& problem, amp::Path2D& path);
+        void followBoundary(Eigen::Vector2d& current_position, const amp::Problem2D& problem, amp::Path2D& path, double& closest_distance_to_goal);
 
-        Eigen::Vector2d MyBugAlgorithm::findNextBoundaryPoint(const Eigen::Vector2d& current_position, const amp::Problem2D& problem);
+        Eigen::Vector2d findNextBoundaryPoint(const Eigen::Vector2d& current_position, const amp::Problem2D& problem);
 
-        igen::Vector2d MyBugAlgorithm::moveAlongEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2);
+        Eigen::Vector2d moveAlongEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2);
 
-        bool MyBugAlgorithm::reachedStartBoundary(const Eigen::Vector2d& current_position);
+        bool reachedStartBoundary(const Eigen::Vector2d& current_position);
 
-        
+        bool isNearEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2);
 
+        Eigen::Vector2d moveAlongEdge(const Eigen::Vector2d& position, const Eigen::Vector2d& v1, const Eigen::Vector2d& v2);
     
     private:
         // Add any member variables here...
